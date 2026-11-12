@@ -1,0 +1,49 @@
+{
+  "name": "ratelimit-engine",
+  "version": "1.0.0",
+  "description": "Enterprise-grade, algorithm-pluggable rate limiting engine for Node.js",
+  "main": "src/index.js",
+  "type": "module",
+  "exports": {
+    ".": "./src/index.js"
+  },
+  "scripts": {
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:coverage": "vitest run --coverage",
+    "lint": "eslint src tests",
+    "lint:fix": "eslint src tests --fix"
+  },
+  "keywords": [
+    "rate-limit",
+    "rate-limiter",
+    "throttle",
+    "token-bucket",
+    "sliding-window",
+    "fixed-window",
+    "leaky-bucket",
+    "redis",
+    "express",
+    "fastify",
+    "enterprise",
+    "middleware"
+  ],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "devDependencies": {
+    "@vitest/coverage-v8": "^1.0.0",
+    "eslint": "^8.57.0",
+    "vitest": "^1.0.0"
+  },
+  "peerDependencies": {
+    "ioredis": ">=5.0.0"
+  },
+  "peerDependenciesMeta": {
+    "ioredis": {
+      "optional": true
+    }
+  }
+}
