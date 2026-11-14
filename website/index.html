@@ -1,0 +1,464 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Enterprise-grade, algorithm-pluggable rate limiting engine for Node.js. Swap algorithms, compose policies, plug in any store." />
+  <title>ratelimit-engine — Pluggable Rate Limiting for Node.js</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ── NAV ─────────────────────────────────────────────────────── -->
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="#" class="nav__logo">
+        <span class="nav__logo-icon">⚡</span>
+        ratelimit-engine
+      </a>
+      <ul class="nav__links">
+        <li><a href="#features">Features</a></li>
+        <li><a href="#algorithms">Algorithms</a></li>
+        <li><a href="#usage">Usage</a></li>
+        <li><a href="#architecture">Architecture</a></li>
+        <li><a href="blog.html" class="nav__link--blog">Blog</a></li>
+        <li>
+          <a href="https://github.com/Abhinav710/ratelimit-engine" target="_blank" class="nav__link--github">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+            GitHub
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ── HERO ─────────────────────────────────────────────────────── -->
+  <section class="hero">
+    <div class="hero__inner">
+      <div class="hero__badge">v1.0.0 — MIT License</div>
+      <h1 class="hero__title">
+        Rate limiting where<br />
+        <span class="hero__title--accent">the algorithm is yours</span>
+      </h1>
+      <p class="hero__subtitle">
+        Enterprise-grade Node.js rate limiting engine. Swap algorithms, compose policies,
+        plug in any store — without touching the engine.
+      </p>
+
+      <div class="hero__install">
+        <div class="install-box">
+          <span class="install-box__prefix">$</span>
+          <code id="installCmd">npm install ratelimit-engine</code>
+          <button class="install-box__copy" onclick="copyInstall()" title="Copy">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 0 1-2-2V4a2 2 0 0 1 2-2h9a2 2 0 0 1 2 2v1"/></svg>
+          </button>
+        </div>
+      </div>
+
+      <div class="hero__ctas">
+        <a href="#usage" class="btn btn--primary">Get Started</a>
+        <a href="https://github.com/Abhinav710/ratelimit-engine" target="_blank" class="btn btn--ghost">View on GitHub</a>
+      </div>
+
+      <div class="hero__stats">
+        <div class="stat">
+          <span class="stat__num">5</span>
+          <span class="stat__label">Built-in algorithms</span>
+        </div>
+        <div class="stat__divider"></div>
+        <div class="stat">
+          <span class="stat__num">2</span>
+          <span class="stat__label">Store backends</span>
+        </div>
+        <div class="stat__divider"></div>
+        <div class="stat">
+          <span class="stat__num">37</span>
+          <span class="stat__label">Tests passing</span>
+        </div>
+        <div class="stat__divider"></div>
+        <div class="stat">
+          <span class="stat__num">0</span>
+          <span class="stat__label">Magic values</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FEATURES ─────────────────────────────────────────────────── -->
+  <section class="section" id="features">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title">Built for production</h2>
+        <p class="section__sub">Everything you need. Nothing you don't.</p>
+      </div>
+      <div class="features-grid">
+
+        <div class="feature-card">
+          <div class="feature-card__icon">🔌</div>
+          <h3>Pluggable Algorithm</h3>
+          <p>The algorithm is a first-class plugin. Extend <code>BaseAlgorithm</code> and drop in your own logic — zero changes to the engine.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon">🧩</div>
+          <h3>Composite Policies</h3>
+          <p>Combine algorithms with <code>ALL</code> or <code>ANY</code> mode. Enforce burst caps AND daily hard limits simultaneously.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon">🗄️</div>
+          <h3>Pluggable Store</h3>
+          <p>In-memory for dev, Redis with atomic Lua scripts for distributed production. Implement <code>BaseStore</code> for any backend.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon">📋</div>
+          <h3>Structured Logging</h3>
+          <p>JSON logs with context on every operation. Plug in Winston or Pino via <code>wrapExternalLogger()</code>.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon">🛡️</div>
+          <h3>Fail-Open / Fail-Closed</h3>
+          <p>Configurable behavior when the store is unavailable. Never silently drop traffic in production.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon">🔑</div>
+          <h3>Flexible Key Resolution</h3>
+          <p>Limit by IP, user ID, API key, route, or compose multiple resolvers into a single scoped key.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon">📡</div>
+          <h3>Standard Headers</h3>
+          <p>Automatically sets <code>X-RateLimit-*</code> and <code>Retry-After</code> headers on every response.</p>
+        </div>
+
+        <div class="feature-card">
+          <div class="feature-card__icon">⚙️</div>
+          <h3>SOLID Architecture</h3>
+          <p>Every layer is an interface. No magic values. No scattered error strings. Constants and types in dedicated files.</p>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ALGORITHMS ────────────────────────────────────────────────── -->
+  <section class="section section--dark" id="algorithms">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title">5 algorithms. Pick one. Compose them. Write your own.</h2>
+      </div>
+
+      <div class="algo-tabs">
+        <div class="algo-tabs__nav">
+          <button class="algo-tab active" data-algo="fixed">Fixed Window</button>
+          <button class="algo-tab" data-algo="sliding">Sliding Window</button>
+          <button class="algo-tab" data-algo="token">Token Bucket</button>
+          <button class="algo-tab" data-algo="leaky">Leaky Bucket</button>
+          <button class="algo-tab" data-algo="composite">Composite</button>
+        </div>
+
+        <div class="algo-panels">
+
+          <div class="algo-panel active" data-algo="fixed">
+            <div class="algo-panel__info">
+              <h3>Fixed Window</h3>
+              <p>Counts requests in a fixed time slot that resets at a hard boundary. Simple and cheap — best when exact boundary behaviour doesn't matter.</p>
+              <ul>
+                <li>✅ Lowest memory footprint</li>
+                <li>✅ Simplest to reason about</li>
+                <li>⚠️ Boundary bursts possible</li>
+              </ul>
+              <div class="algo-panel__use">Best for: internal APIs, rough caps, dev environments</div>
+            </div>
+            <div class="algo-panel__code">
+              <pre><code>import { createLimiter, FixedWindow,
+         MemoryStore, byIP } from 'ratelimit-engine'
+
+const limiter = createLimiter({
+  algorithm: new FixedWindow({
+    limit:    100,
+    windowMs: 60_000,   // 100 req/min
+  }),
+  store: new MemoryStore(),
+  keyBy: byIP,
+})
+
+app.use(limiter.express())</code></pre>
+            </div>
+          </div>
+
+          <div class="algo-panel" data-algo="sliding">
+            <div class="algo-panel__info">
+              <h3>Sliding Window</h3>
+              <p>Weighted approximation of a true rolling window. Eliminates the boundary spike problem of Fixed Window by weighting the previous slot.</p>
+              <ul>
+                <li>✅ No boundary spikes</li>
+                <li>✅ Smooth, consistent limiting</li>
+                <li>⚠️ Slightly higher store usage</li>
+              </ul>
+              <div class="algo-panel__use">Best for: public APIs, user-facing endpoints</div>
+            </div>
+            <div class="algo-panel__code">
+              <pre><code>import { createLimiter, SlidingWindow,
+         RedisStore, byUser } from 'ratelimit-engine'
+
+const limiter = createLimiter({
+  algorithm: new SlidingWindow({
+    limit:    100,
+    windowMs: 60_000,
+  }),
+  store: new RedisStore({ client: redis }),
+  keyBy: byUser,
+})</code></pre>
+            </div>
+          </div>
+
+          <div class="algo-panel" data-algo="token">
+            <div class="algo-panel__info">
+              <h3>Token Bucket</h3>
+              <p>Tokens refill at a fixed rate up to a maximum capacity. Allows short bursts while enforcing a long-term average rate.</p>
+              <ul>
+                <li>✅ Burst-friendly</li>
+                <li>✅ Natural feel for users</li>
+                <li>✅ Ideal for API gateways</li>
+              </ul>
+              <div class="algo-panel__use">Best for: API gateways, developer APIs, SDKs</div>
+            </div>
+            <div class="algo-panel__code">
+              <pre><code>import { createLimiter, TokenBucket,
+         RedisStore, byAPIKey } from 'ratelimit-engine'
+
+const limiter = createLimiter({
+  algorithm: new TokenBucket({
+    capacity:   100,  // max burst
+    refillRate: 10,   // tokens/sec
+  }),
+  store: new RedisStore({ client: redis }),
+  keyBy: byAPIKey,
+})</code></pre>
+            </div>
+          </div>
+
+          <div class="algo-panel" data-algo="leaky">
+            <div class="algo-panel__info">
+              <h3>Leaky Bucket</h3>
+              <p>Requests queue up and drain at a fixed rate regardless of burst. Excess beyond capacity is dropped immediately.</p>
+              <ul>
+                <li>✅ Strict output rate</li>
+                <li>✅ Smooths traffic spikes</li>
+                <li>⚠️ No burst allowance</li>
+              </ul>
+              <div class="algo-panel__use">Best for: payment APIs, webhook delivery, downstream protection</div>
+            </div>
+            <div class="algo-panel__code">
+              <pre><code>import { createLimiter, LeakyBucket,
+         RedisStore, byIP } from 'ratelimit-engine'
+
+const limiter = createLimiter({
+  algorithm: new LeakyBucket({
+    capacity: 100,  // queue depth
+    leakRate: 10,   // requests/sec
+  }),
+  store: new RedisStore({ client: redis }),
+  keyBy: byIP,
+})</code></pre>
+            </div>
+          </div>
+
+          <div class="algo-panel" data-algo="composite">
+            <div class="algo-panel__info">
+              <h3>Composite</h3>
+              <p>Combine multiple algorithms with <code>ALL</code> (every must pass) or <code>ANY</code> (one must pass). Enforce burst caps AND hard daily limits simultaneously.</p>
+              <ul>
+                <li>✅ Multi-policy enforcement</li>
+                <li>✅ ALL and ANY modes</li>
+                <li>✅ Strictest retryAfter returned</li>
+              </ul>
+              <div class="algo-panel__use">Best for: tiered plans, enterprise SLAs, complex policies</div>
+            </div>
+            <div class="algo-panel__code">
+              <pre><code>import { createLimiter, Composite,
+  TokenBucket, SlidingWindow,
+  RedisStore, byUser,
+  COMPOSITE_MODES } from 'ratelimit-engine'
+
+const limiter = createLimiter({
+  algorithm: new Composite({
+    algorithms: [
+      new TokenBucket({ capacity: 50, refillRate: 10 }),
+      new SlidingWindow({ limit: 500, windowMs: 86_400_000 }),
+    ],
+    mode: COMPOSITE_MODES.ALL, // both must pass
+  }),
+  store: new RedisStore({ client: redis }),
+  keyBy: byUser,
+})</code></pre>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── USAGE ─────────────────────────────────────────────────────── -->
+  <section class="section" id="usage">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title">Up and running in minutes</h2>
+      </div>
+
+      <div class="usage-steps">
+
+        <div class="usage-step">
+          <div class="usage-step__num">1</div>
+          <div class="usage-step__content">
+            <h3>Install</h3>
+            <pre><code>npm install ratelimit-engine
+# For Redis support (optional)
+npm install ioredis</code></pre>
+          </div>
+        </div>
+
+        <div class="usage-step">
+          <div class="usage-step__num">2</div>
+          <div class="usage-step__content">
+            <h3>Configure</h3>
+            <pre><code>import { createLimiter, TokenBucket,
+         MemoryStore, byIP } from 'ratelimit-engine'
+
+const limiter = createLimiter({
+  algorithm: new TokenBucket({ capacity: 100, refillRate: 10 }),
+  store:     new MemoryStore(),
+  keyBy:     byIP,
+  failOpen:  true,
+  onBlocked: (ctx, result) => {
+    console.warn(`Blocked ${ctx.ip} — retry in ${result.retryAfter}s`)
+  },
+})</code></pre>
+          </div>
+        </div>
+
+        <div class="usage-step">
+          <div class="usage-step__num">3</div>
+          <div class="usage-step__content">
+            <h3>Apply to your framework</h3>
+            <pre><code>// Express
+app.use('/api', limiter.express())
+
+// Fastify
+fastify.addHook('onRequest', limiter.fastify())
+
+// Framework-agnostic
+const result = await limiter.check({ ip, method, path, headers })
+if (!result.allowed) { /* handle 429 */ }</code></pre>
+          </div>
+        </div>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- ── ARCHITECTURE ──────────────────────────────────────────────── -->
+  <section class="section section--dark" id="architecture">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title">Architecture</h2>
+        <p class="section__sub">Four clean layers. Each independently replaceable.</p>
+      </div>
+
+      <div class="arch-diagram">
+        <div class="arch-layer arch-layer--top">
+          <div class="arch-layer__label">Your Application</div>
+          <div class="arch-layer__desc">Express · Fastify · Any HTTP framework</div>
+        </div>
+        <div class="arch-arrow">↓ req / ↑ res</div>
+        <div class="arch-layer">
+          <div class="arch-layer__label">Framework Adapters</div>
+          <div class="arch-layer__desc">Extracts RequestContext → calls engine → writes headers</div>
+        </div>
+        <div class="arch-arrow">↓ RequestContext / ↑ RateLimitResult</div>
+        <div class="arch-layer arch-layer--engine">
+          <div class="arch-layer__label">Engine Core</div>
+          <div class="arch-layer__desc">KeyResolver · RateLimiter · HeaderWriter · Hooks · Logging</div>
+        </div>
+        <div class="arch-arrow arch-arrow--split">↓ key + store</div>
+        <div class="arch-bottom">
+          <div class="arch-layer arch-layer--algo">
+            <div class="arch-layer__label">Algorithm Layer</div>
+            <div class="arch-layer__desc">FixedWindow · SlidingWindow · TokenBucket · LeakyBucket · Composite · <em>Your own</em></div>
+          </div>
+          <div class="arch-layer arch-layer--store">
+            <div class="arch-layer__label">Store Layer</div>
+            <div class="arch-layer__desc">MemoryStore · RedisStore (atomic Lua) · <em>Your own</em></div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── BLOG TEASER ───────────────────────────────────────────────── -->
+  <section class="section" id="blog">
+    <div class="container">
+      <div class="section__header">
+        <h2 class="section__title">From the Blog</h2>
+        <p class="section__sub">Deep dives on rate limiting, algorithms, and enterprise patterns.</p>
+      </div>
+
+      <div class="blog-grid">
+        <a href="blog.html" class="blog-card blog-card--coming">
+          <div class="blog-card__tag">Coming soon</div>
+          <h3>Token Bucket vs Sliding Window — when to use which</h3>
+          <p>A practical guide to choosing the right algorithm for your API, with real-world benchmarks.</p>
+          <span class="blog-card__read">Read →</span>
+        </a>
+        <a href="blog.html" class="blog-card blog-card--coming">
+          <div class="blog-card__tag">Coming soon</div>
+          <h3>Writing your own rate limit algorithm in 20 lines</h3>
+          <p>How the plugin interface works, and how to ship your own algorithm as a separate npm package.</p>
+          <span class="blog-card__read">Read →</span>
+        </a>
+        <a href="blog.html" class="blog-card blog-card--coming">
+          <div class="blog-card__tag">Coming soon</div>
+          <h3>Rate limiting in Kubernetes — why MemoryStore is not enough</h3>
+          <p>Why distributed rate limiting with Redis and atomic Lua scripts is non-negotiable in multi-pod deployments.</p>
+          <span class="blog-card__read">Read →</span>
+        </a>
+      </div>
+
+      <div class="blog-cta">
+        <a href="blog.html" class="btn btn--primary">Visit the Blog</a>
+      </div>
+    </div>
+  </section>
+
+  <!-- ── FOOTER ────────────────────────────────────────────────────── -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__brand">
+        <span class="nav__logo-icon">⚡</span>
+        <span>ratelimit-engine</span>
+      </div>
+      <div class="footer__links">
+        <a href="https://github.com/Abhinav710/ratelimit-engine" target="_blank">GitHub</a>
+        <a href="https://www.npmjs.com/package/ratelimit-engine" target="_blank">npm</a>
+        <a href="https://github.com/Abhinav710/ratelimit-engine/blob/main/CONTRIBUTING.md" target="_blank">Contributing</a>
+        <a href="blog.html">Blog</a>
+      </div>
+      <div class="footer__copy">
+        MIT License · Built by <a href="https://github.com/Abhinav710" target="_blank">Abhinav710</a>
+      </div>
+    </div>
+  </footer>
+
+  <script src="main.js"></script>
+</body>
+</html>

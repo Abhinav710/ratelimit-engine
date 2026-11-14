@@ -1,0 +1,218 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta name="description" content="Deep dives on rate limiting algorithms, enterprise patterns, and Node.js performance engineering." />
+  <title>Blog — ratelimit-engine</title>
+  <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="blog.css" />
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500&display=swap" rel="stylesheet" />
+</head>
+<body>
+
+  <!-- ── NAV ─────────────────────────────────────────────────────── -->
+  <nav class="nav">
+    <div class="nav__inner">
+      <a href="index.html" class="nav__logo">
+        <span class="nav__logo-icon">⚡</span>
+        ratelimit-engine
+      </a>
+      <ul class="nav__links">
+        <li><a href="index.html#features">Features</a></li>
+        <li><a href="index.html#algorithms">Algorithms</a></li>
+        <li><a href="index.html#usage">Usage</a></li>
+        <li><a href="blog.html" class="nav__link--blog">Blog</a></li>
+        <li>
+          <a href="https://github.com/Abhinav710/ratelimit-engine" target="_blank" class="nav__link--github">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="currentColor"><path d="M12 2C6.477 2 2 6.477 2 12c0 4.418 2.865 8.166 6.839 9.489.5.092.682-.217.682-.482 0-.237-.009-.868-.013-1.703-2.782.603-3.369-1.342-3.369-1.342-.454-1.155-1.11-1.463-1.11-1.463-.908-.62.069-.608.069-.608 1.003.07 1.531 1.03 1.531 1.03.892 1.529 2.341 1.087 2.91.832.092-.647.35-1.088.636-1.338-2.22-.253-4.555-1.11-4.555-4.943 0-1.091.39-1.984 1.029-2.683-.103-.253-.446-1.27.098-2.647 0 0 .84-.269 2.75 1.025A9.578 9.578 0 0 1 12 6.836a9.59 9.59 0 0 1 2.504.337c1.909-1.294 2.747-1.025 2.747-1.025.546 1.377.203 2.394.1 2.647.64.699 1.028 1.592 1.028 2.683 0 3.842-2.339 4.687-4.566 4.935.359.309.678.919.678 1.852 0 1.336-.012 2.415-.012 2.743 0 .267.18.578.688.48C19.138 20.163 22 16.418 22 12c0-5.523-4.477-10-10-10z"/></svg>
+            GitHub
+          </a>
+        </li>
+      </ul>
+    </div>
+  </nav>
+
+  <!-- ── BLOG HERO ─────────────────────────────────────────────────── -->
+  <section class="blog-hero">
+    <div class="blog-hero__inner">
+      <div class="hero__badge">Engineering Blog</div>
+      <h1 class="blog-hero__title">Deep dives on rate limiting</h1>
+      <p class="blog-hero__sub">
+        Algorithms, enterprise patterns, distributed systems, and Node.js performance —
+        written by the people building ratelimit-engine.
+      </p>
+    </div>
+  </section>
+
+  <!-- ── POSTS ─────────────────────────────────────────────────────── -->
+  <section class="section">
+    <div class="container">
+
+      <!-- Featured post placeholder -->
+      <div class="post-featured">
+        <div class="post-featured__meta">
+          <span class="post-tag post-tag--coming">Coming Soon</span>
+          <span class="post-date">— 2024</span>
+        </div>
+        <h2 class="post-featured__title">
+          Token Bucket vs Sliding Window — when to use which
+        </h2>
+        <p class="post-featured__excerpt">
+          Most developers pick a rate limiting algorithm once and never revisit it.
+          In this post we walk through the real-world trade-offs of Token Bucket, Sliding Window,
+          Fixed Window, and Leaky Bucket — with benchmarks and production scenarios for each.
+        </p>
+        <div class="post-featured__footer">
+          <div class="post-author">
+            <div class="post-author__avatar">A</div>
+            <div>
+              <div class="post-author__name">Abhinav710</div>
+              <div class="post-author__handle">@Abhinav710</div>
+            </div>
+          </div>
+          <span class="post-coming-badge">Article in progress</span>
+        </div>
+      </div>
+
+      <!-- Post grid -->
+      <div class="posts-grid">
+
+        <article class="post-card post-card--soon">
+          <div class="post-card__top">
+            <span class="post-tag post-tag--coming">Coming Soon</span>
+          </div>
+          <h3 class="post-card__title">
+            Writing your own rate limit algorithm in 20 lines of JS
+          </h3>
+          <p class="post-card__excerpt">
+            How the <code>BaseAlgorithm</code> plugin interface works, and how to ship your own
+            algorithm as a standalone npm package the community can use.
+          </p>
+          <div class="post-card__footer">
+            <span class="post-card__author">Abhinav710</span>
+            <span class="post-card__read">~8 min read</span>
+          </div>
+        </article>
+
+        <article class="post-card post-card--soon">
+          <div class="post-card__top">
+            <span class="post-tag post-tag--coming">Coming Soon</span>
+          </div>
+          <h3 class="post-card__title">
+            Rate limiting in Kubernetes — why MemoryStore is not enough
+          </h3>
+          <p class="post-card__excerpt">
+            When your app scales to multiple pods, per-instance counters diverge.
+            Why Redis with atomic Lua scripts is non-negotiable for distributed rate limiting.
+          </p>
+          <div class="post-card__footer">
+            <span class="post-card__author">Abhinav710</span>
+            <span class="post-card__read">~10 min read</span>
+          </div>
+        </article>
+
+        <article class="post-card post-card--soon">
+          <div class="post-card__top">
+            <span class="post-tag post-tag--coming">Coming Soon</span>
+          </div>
+          <h3 class="post-card__title">
+            Composite rate limiting — enforcing burst caps AND daily hard limits
+          </h3>
+          <p class="post-card__excerpt">
+            How the Composite algorithm works under the hood, when to use ALL vs ANY mode,
+            and a real-world tiered API plan implementation walkthrough.
+          </p>
+          <div class="post-card__footer">
+            <span class="post-card__author">Abhinav710</span>
+            <span class="post-card__read">~6 min read</span>
+          </div>
+        </article>
+
+        <article class="post-card post-card--soon">
+          <div class="post-card__top">
+            <span class="post-tag post-tag--coming">Coming Soon</span>
+          </div>
+          <h3 class="post-card__title">
+            Building enterprise-grade npm packages — SOLID in JavaScript
+          </h3>
+          <p class="post-card__excerpt">
+            A walkthrough of how ratelimit-engine applies SOLID principles in plain JS —
+            no TypeScript required. Architecture decisions, constants, error factories, and more.
+          </p>
+          <div class="post-card__footer">
+            <span class="post-card__author">Abhinav710</span>
+            <span class="post-card__read">~12 min read</span>
+          </div>
+        </article>
+
+        <article class="post-card post-card--soon">
+          <div class="post-card__top">
+            <span class="post-tag post-tag--coming">Coming Soon</span>
+          </div>
+          <h3 class="post-card__title">
+            Fail-open vs fail-closed — what happens when Redis goes down?
+          </h3>
+          <p class="post-card__excerpt">
+            The store availability problem every rate limiter must answer.
+            How ratelimit-engine's <code>failOpen</code> config works and which mode is right for you.
+          </p>
+          <div class="post-card__footer">
+            <span class="post-card__author">Abhinav710</span>
+            <span class="post-card__read">~5 min read</span>
+          </div>
+        </article>
+
+        <article class="post-card post-card--soon">
+          <div class="post-card__top">
+            <span class="post-tag post-tag--coming">Coming Soon</span>
+          </div>
+          <h3 class="post-card__title">
+            Leaky Bucket in practice — protecting downstream services
+          </h3>
+          <p class="post-card__excerpt">
+            When your upstream can burst but your database cannot. How Leaky Bucket
+            smooths traffic and prevents cascading failures in microservice architectures.
+          </p>
+          <div class="post-card__footer">
+            <span class="post-card__author">Abhinav710</span>
+            <span class="post-card__read">~7 min read</span>
+          </div>
+        </article>
+
+      </div>
+
+      <!-- Newsletter / notify -->
+      <div class="blog-notify">
+        <div class="blog-notify__icon">📬</div>
+        <h3>Get notified when articles publish</h3>
+        <p>Watch the <a href="https://github.com/Abhinav710/ratelimit-engine" target="_blank">GitHub repo</a> or follow <a href="https://github.com/Abhinav710" target="_blank">@Abhinav710</a> for updates.</p>
+        <a href="https://github.com/Abhinav710/ratelimit-engine" target="_blank" class="btn btn--primary">Watch on GitHub</a>
+      </div>
+
+    </div>
+  </section>
+
+  <!-- ── FOOTER ────────────────────────────────────────────────────── -->
+  <footer class="footer">
+    <div class="footer__inner">
+      <div class="footer__brand">
+        <span class="nav__logo-icon">⚡</span>
+        <span>ratelimit-engine</span>
+      </div>
+      <div class="footer__links">
+        <a href="https://github.com/Abhinav710/ratelimit-engine" target="_blank">GitHub</a>
+        <a href="https://www.npmjs.com/package/ratelimit-engine" target="_blank">npm</a>
+        <a href="https://github.com/Abhinav710/ratelimit-engine/blob/main/CONTRIBUTING.md" target="_blank">Contributing</a>
+        <a href="index.html">Home</a>
+      </div>
+      <div class="footer__copy">
+        MIT License · Built by <a href="https://github.com/Abhinav710" target="_blank">Abhinav710</a>
+      </div>
+    </div>
+  </footer>
+
+</body>
+</html>

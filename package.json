@@ -28,7 +28,10 @@
     "enterprise",
     "middleware"
   ],
-  "author": "",
+  "bin": {
+    "ratelimit-engine": "./bin/cli.js"
+  },
+  "author": "Abhinav710 <kumarabhinav5693@gmail.com>",
   "license": "MIT",
   "engines": {
     "node": ">=18.0.0"
