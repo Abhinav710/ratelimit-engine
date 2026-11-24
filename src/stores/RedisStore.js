@@ -27,15 +27,6 @@ return {newVal, pttl}
 `
 
 /**
- * Atomically gets a JSON-encoded entry. Returns nil if absent/expired.
- */
-const LUA_GET_ENTRY = `
-local val = redis.call('GET', KEYS[1])
-if val == false then return nil end
-return val
-`
-
-/**
  * Atomically sets a JSON-encoded entry with a TTL in milliseconds.
  */
 const LUA_SET_ENTRY = `
@@ -58,7 +49,8 @@ export class RedisStore extends BaseStore {
 
     this._client = client
     this._prefix = prefix
-    this._defineScripts()
+    this._client.defineCommand('rleIncrWithTtl', { numberOfKeys: 1, lua: LUA_INCREMENT_WITH_TTL })
+    this._client.defineCommand('rleSetEntry',    { numberOfKeys: 1, lua: LUA_SET_ENTRY })
     logger.info('RedisStore initialised', { prefix })
   }
 
@@ -90,9 +82,7 @@ export class RedisStore extends BaseStore {
    */
   async set(key, entry, ttlMs) {
     try {
-      await this._client.call(
-        'EVALSHA', this._scripts.setEntry,
-        1,
+      await this._client.rleSetEntry(
         this._prefixed(key),
         JSON.stringify({ ...entry, expiresAt: Date.now() + ttlMs }),
         String(ttlMs),
@@ -109,9 +99,7 @@ export class RedisStore extends BaseStore {
    */
   async increment(key, ttlMs) {
     try {
-      const result = await this._client.call(
-        'EVALSHA', this._scripts.incrementWithTtl,
-        1,
+      const result = await this._client.rleIncrWithTtl(
         this._prefixed(key),
         String(ttlMs),
       )
@@ -139,23 +127,6 @@ export class RedisStore extends BaseStore {
   async destroy() {
     await this._client.quit()
     logger.info('RedisStore connection closed')
-  }
-
-  /**
-   * Loads Lua scripts into Redis and caches their SHAs.
-   */
-  _defineScripts() {
-    const load = (script) => this._client.script('LOAD', script)
-
-    this._scripts = {}
-
-    Promise.all([
-      load(LUA_INCREMENT_WITH_TTL).then((sha) => { this._scripts.incrementWithTtl = sha }),
-      load(LUA_GET_ENTRY).then((sha)          => { this._scripts.getEntry         = sha }),
-      load(LUA_SET_ENTRY).then((sha)          => { this._scripts.setEntry         = sha }),
-    ]).catch((cause) => {
-      logger.error('Failed to load Lua scripts', { error: cause.message })
-    })
   }
 
   /**
