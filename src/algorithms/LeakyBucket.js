@@ -43,20 +43,7 @@ export class LeakyBucket extends BaseAlgorithm {
   async check(key, store) {
     const now      = Date.now()
     const ttlMs    = Math.ceil((this._capacity / this._leakRate) * 1000)
-    const entry    = await store.get(key)
-    const lastMeta = entry?.meta ?? { queue: 0, lastLeak: now }
-
-    const elapsed   = (now - lastMeta.lastLeak) / 1000
-    const leaked    = elapsed * this._leakRate
-    const queue     = Math.max(0, lastMeta.queue - leaked)
-    const allowed   = queue < this._capacity
-    const newQueue  = allowed ? queue + 1 : queue
-    const remaining = Math.max(0, this._capacity - Math.ceil(newQueue))
-
-    const msUntilSlot = allowed
-      ? 0
-      : Math.ceil((queue - this._capacity + 1) / this._leakRate * 1000)
-    const resetAt = new Date(now + msUntilSlot)
+    const { result, queue, newQueue } = this._evaluate(await store.get(key), now)
 
     await store.set(key, {
       count:       Math.ceil(newQueue),
@@ -65,14 +52,50 @@ export class LeakyBucket extends BaseAlgorithm {
       meta:        { queue: newQueue, lastLeak: now },
     }, ttlMs)
 
-    logger.debug('Leaky bucket check', { key, queue, newQueue, allowed })
+    logger.debug('Leaky bucket check', { key, queue, newQueue, allowed: result.allowed })
+
+    return result
+  }
+
+  /**
+   * @param {string} key
+   * @param {import('../stores/BaseStore.js').BaseStore} store
+   * @returns {Promise<import('../types/index.js').RateLimitResult>}
+   */
+  async peek(key, store) {
+    return this._evaluate(await store.get(key), Date.now()).result
+  }
+
+  /**
+   * Works out the outcome of one request against the stored bucket.
+   *
+   * @param {import('../types/index.js').StoreEntry|null} entry
+   * @param {number} now
+   * @returns {{ result: import('../types/index.js').RateLimitResult, queue: number, newQueue: number }}
+   */
+  _evaluate(entry, now) {
+    const lastMeta = entry?.meta ?? { queue: 0, lastLeak: now }
+
+    const elapsed   = (now - lastMeta.lastLeak) / 1000
+    const leaked    = elapsed * this._leakRate
+    const queue     = Math.max(0, lastMeta.queue - leaked)
+    const allowed   = queue < this._capacity
+    const newQueue  = allowed ? queue + 1 : queue
+
+    const msUntilSlot = allowed
+      ? 0
+      : Math.ceil((queue - this._capacity + 1) / this._leakRate * 1000)
 
     return {
-      allowed,
-      limit:      this._capacity,
-      remaining,
-      resetAt,
-      retryAfter: allowed ? undefined : Math.ceil(msUntilSlot / 1000),
+      queue,
+      newQueue,
+      result: {
+        allowed,
+        limit:      this._capacity,
+        remaining:  Math.max(0, this._capacity - Math.ceil(newQueue)),
+        resetAt:    new Date(now + msUntilSlot),
+        retryAfter: allowed ? undefined : Math.ceil(msUntilSlot / 1000),
+      },
     }
   }
 

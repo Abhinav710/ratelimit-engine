@@ -426,6 +426,14 @@ new Composite({
 })
 ```
 
+Composite asks every child first and only then charges them:
+
+- blocked request: no child is charged, so a request one limit rejects does not use up the others
+- `ALL`, allowed: every child is charged
+- `ANY`, allowed: only the first child that allows is charged
+
+The ask and the charge are separate store calls, so concurrent requests can overshoot a limit by the number in flight.
+
 ### Custom Algorithm
 
 Extend `BaseAlgorithm` to implement your own logic:
@@ -438,6 +446,13 @@ class MyAlgorithm extends BaseAlgorithm {
 
   async check(key, store) {
     // store.get / store.set / store.increment available
+    return { allowed: true, limit: 100, remaining: 99, resetAt: new Date(Date.now() + 60_000) }
+  }
+
+  // Optional: what check() would return right now, without consuming quota.
+  // Composite needs it to ask before charging. Without it, Composite charges
+  // every child on every request.
+  async peek(key, store) {
     return { allowed: true, limit: 100, remaining: 99, resetAt: new Date(Date.now() + 60_000) }
   }
 

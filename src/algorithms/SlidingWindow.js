@@ -61,22 +61,53 @@ export class SlidingWindow extends BaseAlgorithm {
 
     const newCount  = await store.increment(currentKey, this._windowMs * 2)
     const totalCount = Math.floor(prevCount * (1 - windowProgress)) + newCount
-    const remaining  = Math.max(0, this._limit - totalCount)
-    const allowed    = totalCount <= this._limit
-    const resetAt    = new Date((currentSlot + 1) * this._windowMs)
+    const result     = this._result(totalCount, now)
 
     logger.debug('Sliding window check', {
       key,
       weightedCount,
       totalCount,
       limit: this._limit,
-      allowed,
+      allowed: result.allowed,
     })
+
+    return result
+  }
+
+  /**
+   * @param {string} key
+   * @param {import('../stores/BaseStore.js').BaseStore} store
+   * @returns {Promise<import('../types/index.js').RateLimitResult>}
+   */
+  async peek(key, store) {
+    const now         = Date.now()
+    const currentSlot = Math.floor(now / this._windowMs)
+
+    const [currentEntry, prevEntry] = await Promise.all([
+      store.get(`${key}:${currentSlot}`),
+      store.get(`${key}:${currentSlot - 1}`),
+    ])
+
+    const windowProgress = (now % this._windowMs) / this._windowMs
+    const totalCount     = Math.floor((prevEntry?.count ?? 0) * (1 - windowProgress))
+      + (currentEntry?.count ?? 0) + 1
+
+    return this._result(totalCount, now)
+  }
+
+  /**
+   * @param {number} totalCount - Weighted requests in the window, this one included.
+   * @param {number} now
+   * @returns {import('../types/index.js').RateLimitResult}
+   */
+  _result(totalCount, now) {
+    const resetAt = new Date((Math.floor(now / this._windowMs) + 1) * this._windowMs)
+    const allowed = totalCount <= this._limit
 
     return {
       allowed,
       limit:      this._limit,
-      remaining,
+      remaining:  Math.max(0, this._limit - totalCount),
       resetAt,
       retryAfter: allowed ? undefined : Math.ceil((resetAt - now) / 1000),
     }
