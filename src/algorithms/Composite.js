@@ -78,9 +78,18 @@ export class Composite extends BaseAlgorithm {
       return this._combine(key, results)
     }
 
-    const payer   = peeks.findIndex((r) => r.allowed)
+    // Charge the first child that allows. If it turns out to be full by the
+    // time it is charged (a concurrent request got there first), try the next.
     const results = [...peeks]
-    results[payer] = await this._algorithms[payer].check(key, store)
+    for (let i = 0; i < results.length; i++) {
+      if (!results[i].allowed) {
+        continue
+      }
+      results[i] = await this._algorithms[i].check(key, store)
+      if (results[i].allowed) {
+        break
+      }
+    }
     return this._combine(key, results)
   }
 
