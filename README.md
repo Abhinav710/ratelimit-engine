@@ -47,7 +47,8 @@ It ships with a **setup wizard CLI** that generates a ready-to-use config file f
 
 | Version | Status     | Node.js  | Highlights                                      |
 |---------|------------|----------|-------------------------------------------------|
-| `1.1.0` | **Latest** | `>= 18`  | Live 10ms dashboard, setup wizard CLI           |
+| `1.1.2` | **Latest** | `>= 20.12`  | Fix RedisStore EVALSHA race + NOSCRIPT; drop Node 18 |
+| `1.1.0` | Stable     | `>= 18`  | Live 10ms dashboard, setup wizard CLI           |
 | `1.0.2` | Stable     | `>= 18`  | Custom overrides step in wizard                 |
 | `1.0.1` | Stable     | `>= 18`  | Setup wizard CLI (replaces simulation)          |
 | `1.0.0` | Stable     | `>= 18`  | Initial release — 5 algorithms, Redis, adapters |
