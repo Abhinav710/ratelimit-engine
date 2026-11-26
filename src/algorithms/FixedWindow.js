@@ -41,16 +41,39 @@ export class FixedWindow extends BaseAlgorithm {
     const now        = Date.now()
     const windowKey  = `${key}:${Math.floor(now / this._windowMs)}`
     const count      = await store.increment(windowKey, this._windowMs)
-    const resetAt    = new Date(Math.ceil(now / this._windowMs) * this._windowMs)
-    const remaining  = Math.max(0, this._limit - count)
-    const allowed    = count <= this._limit
+    const result     = this._result(count, now)
 
-    logger.debug('Fixed window check', { key, count, limit: this._limit, allowed })
+    logger.debug('Fixed window check', { key, count, limit: this._limit, allowed: result.allowed })
+
+    return result
+  }
+
+  /**
+   * @param {string} key
+   * @param {import('../stores/BaseStore.js').BaseStore} store
+   * @returns {Promise<import('../types/index.js').RateLimitResult>}
+   */
+  async peek(key, store) {
+    const now       = Date.now()
+    const windowKey = `${key}:${Math.floor(now / this._windowMs)}`
+    const entry     = await store.get(windowKey)
+
+    return this._result((entry?.count ?? 0) + 1, now)
+  }
+
+  /**
+   * @param {number} count - Requests in the window, this one included.
+   * @param {number} now
+   * @returns {import('../types/index.js').RateLimitResult}
+   */
+  _result(count, now) {
+    const resetAt = new Date(Math.ceil(now / this._windowMs) * this._windowMs)
+    const allowed = count <= this._limit
 
     return {
       allowed,
       limit:       this._limit,
-      remaining,
+      remaining:   Math.max(0, this._limit - count),
       resetAt,
       retryAfter:  allowed ? undefined : Math.ceil((resetAt - now) / 1000),
     }

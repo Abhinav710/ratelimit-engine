@@ -43,7 +43,37 @@ export class TokenBucket extends BaseAlgorithm {
   async check(key, store) {
     const now       = Date.now()
     const ttlMs     = Math.ceil((this._capacity / this._refillRate) * 1000)
-    const entry     = await store.get(key)
+    const { result, tokensNow, tokensAfter } = this._evaluate(await store.get(key), now)
+
+    await store.set(key, {
+      count:       this._capacity - result.remaining,
+      windowStart: now,
+      expiresAt:   now + ttlMs,
+      meta:        { tokens: tokensAfter, lastRefill: now },
+    }, ttlMs)
+
+    logger.debug('Token bucket check', { key, tokensNow, tokensAfter, allowed: result.allowed })
+
+    return result
+  }
+
+  /**
+   * @param {string} key
+   * @param {import('../stores/BaseStore.js').BaseStore} store
+   * @returns {Promise<import('../types/index.js').RateLimitResult>}
+   */
+  async peek(key, store) {
+    return this._evaluate(await store.get(key), Date.now()).result
+  }
+
+  /**
+   * Works out the outcome of one request against the stored bucket.
+   *
+   * @param {import('../types/index.js').StoreEntry|null} entry
+   * @param {number} now
+   * @returns {{ result: import('../types/index.js').RateLimitResult, tokensNow: number, tokensAfter: number }}
+   */
+  _evaluate(entry, now) {
     const lastEntry = entry?.meta ?? { tokens: this._capacity, lastRefill: now }
 
     const elapsed       = (now - lastEntry.lastRefill) / 1000
@@ -51,25 +81,18 @@ export class TokenBucket extends BaseAlgorithm {
     const tokensNow     = Math.min(this._capacity, lastEntry.tokens + refilled)
     const allowed       = tokensNow >= 1
     const tokensAfter   = allowed ? tokensNow - 1 : tokensNow
-    const remaining     = Math.floor(tokensAfter)
     const msUntilToken  = allowed ? 0 : Math.ceil((1 - tokensNow) / this._refillRate * 1000)
-    const resetAt       = new Date(now + msUntilToken)
-
-    await store.set(key, {
-      count:       this._capacity - remaining,
-      windowStart: now,
-      expiresAt:   now + ttlMs,
-      meta:        { tokens: tokensAfter, lastRefill: now },
-    }, ttlMs)
-
-    logger.debug('Token bucket check', { key, tokensNow, tokensAfter, allowed })
 
     return {
-      allowed,
-      limit:      this._capacity,
-      remaining,
-      resetAt,
-      retryAfter: allowed ? undefined : Math.ceil(msUntilToken / 1000),
+      tokensNow,
+      tokensAfter,
+      result: {
+        allowed,
+        limit:      this._capacity,
+        remaining:  Math.floor(tokensAfter),
+        resetAt:    new Date(now + msUntilToken),
+        retryAfter: allowed ? undefined : Math.ceil(msUntilToken / 1000),
+      },
     }
   }
 
