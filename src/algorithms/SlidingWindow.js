@@ -58,16 +58,18 @@ export class SlidingWindow extends BaseAlgorithm {
     // Weight the previous window count by how far into the current window we are
     const windowProgress = (now % this._windowMs) / this._windowMs
     const weightedCount  = Math.floor(prevCount * (1 - windowProgress)) + currentCount
+    const allowed        = weightedCount + 1 <= this._limit
 
-    const newCount  = await store.increment(currentKey, this._windowMs * 2)
-    const totalCount = Math.floor(prevCount * (1 - windowProgress)) + newCount
+    if (allowed) {
+      await store.increment(currentKey, this._windowMs * 2)
+    }
+
+    const totalCount = weightedCount + (allowed ? 1 : 0)
     const remaining  = Math.max(0, this._limit - totalCount)
-    const allowed    = totalCount <= this._limit
     const resetAt    = new Date((currentSlot + 1) * this._windowMs)
 
     logger.debug('Sliding window check', {
       key,
-      weightedCount,
       totalCount,
       limit: this._limit,
       allowed,
