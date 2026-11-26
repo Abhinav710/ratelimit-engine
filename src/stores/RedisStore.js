@@ -65,6 +65,10 @@ export class RedisStore extends BaseStore {
         return null
       }
       const entry = JSON.parse(raw)
+      // increment() stores a bare integer, not a JSON entry
+      if (typeof entry === 'number') {
+        return { count: entry }
+      }
       if (Date.now() > entry.expiresAt) {
         return null
       }
