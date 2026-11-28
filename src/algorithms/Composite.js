@@ -39,7 +39,8 @@ export class Composite extends BaseAlgorithm {
 
   /**
    * Runs all child algorithms in parallel and combines their results
-   * according to the configured mode.
+   * according to the configured mode. Each child gets its own store key,
+   * so two children never read or overwrite each other's state.
    *
    * @param {string} key
    * @param {import('../stores/BaseStore.js').BaseStore} store
@@ -47,7 +48,7 @@ export class Composite extends BaseAlgorithm {
    */
   async check(key, store) {
     const results = await Promise.all(
-      this._algorithms.map((algo) => algo.check(key, store)),
+      this._algorithms.map((algo, i) => algo.check(this._childKey(key, i), store)),
     )
 
     const allowed = this._mode === COMPOSITE_MODES.ALL
@@ -91,7 +92,20 @@ export class Composite extends BaseAlgorithm {
    * @returns {Promise<void>}
    */
   async reset(key, store) {
-    await Promise.all(this._algorithms.map((algo) => algo.reset(key, store)))
+    await Promise.all(this._algorithms.map((algo, i) => algo.reset(this._childKey(key, i), store)))
     logger.debug('Composite reset', { key })
+  }
+
+  /**
+   * Store key for the child at the given position. The position is used
+   * rather than the algorithm name because two children can be the same
+   * algorithm (e.g. a burst TokenBucket and a sustained TokenBucket).
+   *
+   * @param {string} key
+   * @param {number} index
+   * @returns {string}
+   */
+  _childKey(key, index) {
+    return `${key}:c${index}`
   }
 }
